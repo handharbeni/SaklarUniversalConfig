@@ -9,10 +9,7 @@ public class UtilList<T> {
     public List<T> convertObjectToList(Object obj) {
         List<T> result = new ArrayList<>();
         if (obj instanceof List) {
-            for (int i = 0; i < ((List<T>) obj).size(); i++) {
-                T item = ((List<T>) obj).get(i);
-                result.add((T) item);
-            }
+            result.addAll(((List<T>) obj));
         }
         return result;
     }
