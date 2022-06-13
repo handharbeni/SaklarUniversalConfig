@@ -196,8 +196,9 @@ public class MainActivity extends AppCompatActivity
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             requestPermission();
         }
-        if (!listDevice.contains(device)) {
-            if (device.getName() != null) {
+
+        if (device.getName() != null) {
+            if (!listDevice.contains(device)) {
                 listDevice.add(device);
             }
         }
