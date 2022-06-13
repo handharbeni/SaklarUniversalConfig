@@ -7,12 +7,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.mhandharbeni.saklaruniversalconfig.databinding.FragmentMainBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class MainFragment extends Fragment {
@@ -21,7 +23,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
+            @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
 
@@ -33,7 +35,11 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Objects.requireNonNull(NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry())
+        Objects.requireNonNull(
+                        NavHostFragment
+                                .findNavController(MainFragment.this)
+                                .getCurrentBackStackEntry()
+                )
                 .getSavedStateHandle()
                 .getLiveData(Constant.BLUETOOTH_CONNECTED)
                 .observe(getViewLifecycleOwner(), o -> {
@@ -43,7 +49,8 @@ public class MainFragment extends Fragment {
                         } else {
                             binding.fab.setImageResource(R.drawable.ic_bluetooth_black);
                         }
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 });
 
         if (MainActivity.bluetoothConnected) {
@@ -51,17 +58,41 @@ public class MainFragment extends Fragment {
         } else {
             binding.fab.setImageResource(R.drawable.ic_bluetooth_black);
         }
-//        binding.fab.setOnClickListener(v -> {
-//            NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry().getSavedStateHandle().set(Constant.BLUETOOTH_SCAN_REQUEST, "MainFragment");
-//        });
         binding.btnTestOn.setOnClickListener(v -> {
-            NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry().getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, "on");
+            List<String> lCommand = new ArrayList<>(
+                    Arrays.asList(
+                            "01",
+                            "01",
+                            "01",
+                            "DD"
+                    )
+            );
+            Objects.requireNonNull(
+                    NavHostFragment
+                            .findNavController(MainFragment.this)
+                            .getCurrentBackStackEntry()
+            ).getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, lCommand);
         });
         binding.btnTestOff.setOnClickListener(v -> {
-            NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry().getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, "off");
+            List<String> lCommand = new ArrayList<>(
+                    Arrays.asList(
+                            "03",
+                            "01",
+                            "01",
+                            "DB"
+                    )
+            );
+            Objects.requireNonNull(
+                    NavHostFragment
+                            .findNavController(MainFragment.this)
+                            .getCurrentBackStackEntry()
+            ).getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, lCommand);
         });
-        binding.fab.setOnClickListener(view1 -> NavHostFragment.findNavController(MainFragment.this)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment));
+        binding.fab.setOnClickListener(v ->
+                NavHostFragment
+                        .findNavController(MainFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_SecondFragment)
+        );
 
     }
 
