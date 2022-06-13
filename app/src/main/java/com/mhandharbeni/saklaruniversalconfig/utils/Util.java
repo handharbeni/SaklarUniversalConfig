@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.location.LocationManager;
 
+import androidx.navigation.NavController;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
@@ -17,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Util {
 

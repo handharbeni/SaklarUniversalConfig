@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
@@ -30,6 +31,7 @@ import com.mhandharbeni.saklaruniversalconfig.databinding.ActivityMainBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
 import com.mhandharbeni.saklaruniversalconfig.utils.Util;
 import com.mhandharbeni.saklaruniversalconfig.utils.UtilList;
+import com.mhandharbeni.saklaruniversalconfig.utils.UtilNav;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,8 +174,8 @@ public class MainActivity extends AppCompatActivity
         } else if (status == BluetoothStatus.NONE) {
             bluetoothConnected = false;
         }
-        Objects.requireNonNull(navController.getCurrentBackStackEntry()).getSavedStateHandle().set(Constant.BLUETOOTH_CONNECTED, bluetoothConnected);
-        Objects.requireNonNull(navController.getCurrentBackStackEntry()).getSavedStateHandle().set(Constant.BLUETOOTH_CONNECTED_STRING, status);
+        new UtilNav<Boolean>().setStateHandle(navController, Constant.BLUETOOTH_CONNECTED, bluetoothConnected);
+        new UtilNav<BluetoothStatus>().setStateHandle(navController, Constant.BLUETOOTH_CONNECTED_STRING, status);
     }
 
     @Override
@@ -248,34 +250,38 @@ public class MainActivity extends AppCompatActivity
     }
 
     void observeChild(NavController navController, NavDestination navDestination, Bundle arguments) {
-        Objects.requireNonNull(navController.getCurrentBackStackEntry())
-                .getSavedStateHandle()
-                .getLiveData(Constant.REQUEST_PERMISSION)
-                .observe(this, o -> requestPermission());
+        new UtilNav<>()
+                .observeValue(
+                        navController,
+                        this,
+                        Constant.REQUEST_PERMISSION,
+                        o -> requestPermission());
 
-        Objects.requireNonNull(navController.getCurrentBackStackEntry())
-                .getSavedStateHandle()
-                .getLiveData(Constant.BLUETOOTH_SCAN_REQUEST).observe(this,
-                        o -> checkBluetoothDevice()
-                );
+        new UtilNav<>()
+                .observeValue(
+                        navController,
+                        this,
+                        Constant.BLUETOOTH_SCAN_REQUEST,
+                        o -> checkBluetoothDevice());
 
-        Objects.requireNonNull(navController.getCurrentBackStackEntry())
-                .getSavedStateHandle()
-                .getLiveData(Constant.BLUETOOTH_CONNECT_REQUEST).observe(this,
+        new UtilNav<BluetoothDevice>()
+                .observeValue(
+                        navController,
+                        this,
+                        Constant.BLUETOOTH_CONNECT_REQUEST,
                         o -> {
                             try {
-                                service.connect((BluetoothDevice) o);
+                                service.connect(o);
                             } catch (Exception ignored) {
                             }
                         });
 
-        Objects.requireNonNull(
-                        navController
-                                .getCurrentBackStackEntry()
-                )
-                .getSavedStateHandle()
-                .getLiveData(Constant.BLUETOOTH_SEND_COMMAND)
-                .observe(this, this::sendCommand);
+        new UtilNav<>()
+                .observeValue(
+                        navController,
+                        this,
+                        Constant.BLUETOOTH_SEND_COMMAND,
+                        this::sendCommand);
     }
 
     void sendCommand(Object command) {

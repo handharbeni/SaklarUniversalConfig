@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.mhandharbeni.saklaruniversalconfig.databinding.FragmentMainBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
+import com.mhandharbeni.saklaruniversalconfig.utils.UtilNav;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,24 +35,21 @@ public class MainFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        Objects.requireNonNull(
-                        NavHostFragment
-                                .findNavController(MainFragment.this)
-                                .getCurrentBackStackEntry()
-                )
-                .getSavedStateHandle()
-                .getLiveData(Constant.BLUETOOTH_CONNECTED)
-                .observe(getViewLifecycleOwner(), o -> {
-                    try {
-                        if ((boolean) o) {
-                            binding.fab.setImageResource(R.drawable.ic_bluetooth_connected_black);
-                        } else {
-                            binding.fab.setImageResource(R.drawable.ic_bluetooth_black);
-                        }
-                    } catch (Exception ignored) {
-                    }
-                });
+        new UtilNav<Boolean>()
+                .observeValue(
+                        NavHostFragment.findNavController(MainFragment.this),
+                        getViewLifecycleOwner(),
+                        Constant.BLUETOOTH_CONNECTED,
+                        o -> {
+                            try {
+                                if (o) {
+                                    binding.fab.setImageResource(R.drawable.ic_bluetooth_connected_black);
+                                } else {
+                                    binding.fab.setImageResource(R.drawable.ic_bluetooth_black);
+                                }
+                            } catch (Exception ignored) {
+                            }
+                        });
 
         if (MainActivity.bluetoothConnected) {
             binding.fab.setImageResource(R.drawable.ic_bluetooth_connected_black);
@@ -67,11 +65,12 @@ public class MainFragment extends Fragment {
                             "DD"
                     )
             );
-            Objects.requireNonNull(
-                    NavHostFragment
-                            .findNavController(MainFragment.this)
-                            .getCurrentBackStackEntry()
-            ).getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, lCommand);
+            new UtilNav<List<String>>()
+                    .setStateHandle(
+                            NavHostFragment.findNavController(MainFragment.this),
+                            Constant.BLUETOOTH_SEND_COMMAND,
+                            lCommand
+                    );
         });
         binding.btnTestOff.setOnClickListener(v -> {
             List<String> lCommand = new ArrayList<>(
@@ -82,11 +81,11 @@ public class MainFragment extends Fragment {
                             "DB"
                     )
             );
-            Objects.requireNonNull(
-                    NavHostFragment
-                            .findNavController(MainFragment.this)
-                            .getCurrentBackStackEntry()
-            ).getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, lCommand);
+            new UtilNav<List<String>>()
+                    .setStateHandle(
+                            NavHostFragment.findNavController(MainFragment.this),
+                            Constant.BLUETOOTH_SEND_COMMAND,
+                            lCommand);
         });
         binding.fab.setOnClickListener(v ->
                 NavHostFragment
