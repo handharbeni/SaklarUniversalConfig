@@ -7,8 +7,9 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -28,13 +29,22 @@ import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothClassicService;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothConfiguration;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.mhandharbeni.saklaruniversalconfig.databinding.ActivityMainBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -63,20 +73,44 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
         }
     };
 
-
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // features requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                boolean readStoragePermission = Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE));
+                boolean writeStoragePermission = Boolean.TRUE.equals(result.get(Manifest.permission.WRITE_EXTERNAL_STORAGE));
+                boolean fineLocationPermission = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION));
+                boolean coarseLocationPermission = Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
+                if (!readStoragePermission) {
+                    // read storage denied
+                } else if (!writeStoragePermission) {
+                    // write storage denied
+                } else if (!fineLocationPermission) {
+                    // fine location denied
+                } else if (!coarseLocationPermission) {
+                    // coarse location denied
                 }
+
+                if (readStoragePermission) {
+                    // read storage accepted
+                } else if (writeStoragePermission) {
+                    // write storage accepted
+                } else if (fineLocationPermission || coarseLocationPermission) {
+                    // coarse location accepted
+                    enableGps();
+                //                    Log.d(TAG, "locationTask: "+fineLocationPermission+" "+coarseLocationPermission);
+//                    LocationSettingsRequest builder = new LocationSettingsRequest.Builder()
+//                            .addLocationRequest(locationRequestHighAccuracy)
+//                            .setNeedBle(true)
+//                            .build();
+//                    Task<LocationSettingsResponse> resultLocation =
+//                            LocationServices.getSettingsClient(this).checkLocationSettings(builder);
+//                    resultLocation.addOnCompleteListener(task -> {
+//                        Log.d(TAG, "locationTask : "+task.getResult().toString());
+//                    });
+                }
+
+
             });
+
     ActivityResultLauncher<Intent> mainActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -103,15 +137,20 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
                     Objects.requireNonNull(controller.getCurrentBackStackEntry())
                             .getSavedStateHandle()
-                            .getLiveData(Constant.BLUETOOTH_SCAN_REQUEST).observeForever(o -> {
+                            .getLiveData(Constant.BLUETOOTH_SCAN_REQUEST).observe(this, o -> {
                                 checkBluetoothDevice();
                             });
                     Objects.requireNonNull(controller.getCurrentBackStackEntry())
                             .getSavedStateHandle()
-                            .getLiveData(Constant.BLUETOOTH_CONNECT_REQUEST).observeForever(o -> {
+                            .getLiveData(Constant.BLUETOOTH_CONNECT_REQUEST).observe(this, o -> {
                                 try {
                                     service.connect((BluetoothDevice) o);
                                 } catch (Exception ignored) {}
+                            });
+                    Objects.requireNonNull(controller.getCurrentBackStackEntry())
+                            .getSavedStateHandle()
+                            .getLiveData(Constant.BLUETOOTH_SEND_COMMAND).observe(this, o -> {
+                                sendCommand((String) o);
                             });
                 }
         );
@@ -150,13 +189,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
                 || super.onSupportNavigateUp();
     }
 
+//    @AfterPermissionGranted(Constant.RC_PERMISSION)
     void requestPermission() {
+        enableGps();
         String[] listPermission = new String[Constant.LIST_PERMISSION.size()];
         for (int i = 0; i < Constant.LIST_PERMISSION.size(); i++) {
             listPermission[i] = Constant.LIST_PERMISSION.get(i);
-            requestPermissionLauncher.launch(Constant.LIST_PERMISSION.get(i));
+//            requestPermissionLauncher.launch(Constant.LIST_PERMISSION.get(i));
         }
-        ActivityCompat.requestPermissions(this, listPermission, 200);
+
+        requestPermissionLauncher.launch(listPermission);
     }
 
     BluetoothAdapter bluetoothAdapter;
@@ -179,11 +221,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
         BluetoothService.init(config);
         service = BluetoothService.getDefaultInstance();
 
-        service.disconnect();
-        service.startScan();
-
         service.setOnEventCallback(this);
         service.setOnScanCallback(this);
+
+        try {
+            service.disconnect();
+        } catch (Exception ignored) {
+
+        } finally {
+            service.startScan();
+        }
     }
 
     boolean checkBluetoothDevice() {
@@ -202,9 +249,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
             Constant.REQUEST_CODE = Constant.REQUEST_CODE_ENABLE_BLUETOOTH;
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             mainActivityLauncher.launch(enableBtIntent);
-        } else {
-            searchBondedDevices();
         }
+        searchBondedDevices();
     }
 
     void searchBondedDevices() {
@@ -243,7 +289,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
         if (status == BluetoothStatus.CONNECTED) {
             bluetoothConnected = true;
             navController.navigateUp();
+        } else if (status == BluetoothStatus.CONNECTING){
+            bluetoothConnected = false;
+        } else if (status == BluetoothStatus.NONE) {
+            bluetoothConnected = false;
         }
+        Objects.requireNonNull(navController.getCurrentBackStackEntry()).getSavedStateHandle().set(Constant.BLUETOOTH_CONNECTED, bluetoothConnected);
+        Objects.requireNonNull(navController.getCurrentBackStackEntry()).getSavedStateHandle().set(Constant.BLUETOOTH_CONNECTED_STRING, status);
     }
 
     @Override
@@ -295,5 +347,144 @@ public class MainActivity extends AppCompatActivity implements BluetoothService.
     @Override
     public void onStopScan() {
 
+    }
+
+    void sendCommand(String command) {
+        try {
+            if (command.equalsIgnoreCase("off")) {
+                service.write(generateDataOff());
+            } else if (command.equalsIgnoreCase("on")){
+                service.write(generateDataOn());
+            }
+        } catch (Exception ignored) {}
+    }
+
+
+    byte[] generateDataOn(){
+        List<Byte> lByte = new ArrayList<>();
+        List<String> lCommand = new ArrayList<>(
+                Arrays.asList(
+                        "01",
+                        "01",
+                        "01",
+                        "DD"
+                )
+        );
+        int total = 0;
+        for (String s : lCommand) {
+            for (char c : s.toCharArray()) {
+                total += c;
+            }
+        }
+        total = total & 0xFF;
+        total = (~total + 1) & 0xFF;
+        String hexs = Integer.toHexString(total);
+        lCommand.add(hexs);
+        lByte.add((byte) 0xAA);
+        for (String s: lCommand) {
+            for (char c : s.toCharArray()) {
+                String hex = String.format("%04x", (int) c);
+                lByte.add((byte) c);
+            }
+        }
+        lByte.add((byte) 0x0D);
+        lByte.add((byte) 0x0A);
+
+        byte[] rByte = new byte[lByte.size()];
+        for (int i = 0; i < lByte.size(); i++) {
+            rByte[i] = lByte.get(i);
+        }
+        return rByte;
+    }
+
+    byte[] generateDataOff() {
+        List<Byte> lByte = new ArrayList<>();
+        List<String> lCommand = new ArrayList<>(
+                Arrays.asList(
+                        "03",
+                        "01",
+                        "01",
+                        "DB"
+                )
+        );
+        int total = 0;
+        for (String s : lCommand) {
+            for (char c : s.toCharArray()) {
+                total += c;
+            }
+        }
+        total = total & 0xFF;
+        total = (~total + 1) & 0xFF;
+        String hexs = Integer.toHexString(total);
+        lCommand.add(hexs);
+        lByte.add((byte) 0xAA);
+        for (String s: lCommand) {
+            for (char c : s.toCharArray()) {
+                String hex = String.format("%04x", (int) c);
+                lByte.add((byte) c);
+            }
+        }
+        lByte.add((byte) 0x0D);
+        lByte.add((byte) 0x0A);
+
+        byte[] rByte = new byte[lByte.size()];
+        for (int i = 0; i < lByte.size(); i++) {
+            rByte[i] = lByte.get(i);
+        }
+        return rByte;
+    }
+
+    public boolean isGpsEnabled(){
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    public void enableGps() {
+        if(!isGpsEnabled()){
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(locationRequest);
+
+            builder.setAlwaysShow(true); //this displays dialog box like Google Maps with two buttons - OK and NO,THANKS
+
+            Task<LocationSettingsResponse> task =
+                    LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
+
+            task.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
+                @Override
+                public void onComplete(Task<LocationSettingsResponse> task) {
+                    try {
+                        LocationSettingsResponse response = task.getResult(ApiException.class);
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                    } catch (ApiException exception) {
+                        switch (exception.getStatusCode()) {
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                // Location settings are not satisfied. But could be fixed by showing the
+                                // user a dialog.
+                                try {
+                                    // Cast to a resolvable exception.
+                                    ResolvableApiException resolvable = (ResolvableApiException) exception;
+                                    // Show the dialog by calling startResolutionForResult(),
+                                    // and check the result in onActivityResult().
+                                    resolvable.startResolutionForResult(
+                                            MainActivity.this,
+                                            Constant.REQUEST_CHECK_SETTINGS);
+                                } catch (IntentSender.SendIntentException e) {
+                                    // Ignore the error.
+                                } catch (ClassCastException e) {
+                                    // Ignore, should be an impossible error.
+                                }
+                                break;
+                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                // Location settings are not satisfied. However, we have no way to fix the
+                                // settings so we won't show the dialog.
+                                break;
+                        }
+                    }
+                }
+            });
+        }
     }
 }

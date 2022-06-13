@@ -45,10 +45,12 @@ public class BluetoothDevicesAdapter extends RecyclerView.Adapter<BluetoothDevic
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BluetoothDevice bluetoothDevice = listDevice.get(position);
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+
         }
         holder.binding.btName.setText(bluetoothDevice.getName());
         holder.binding.btAddress.setText(bluetoothDevice.getAddress());
         holder.itemView.setOnClickListener(view -> {
+            holder.binding.btAddress.setText("CONNECTING");
             deviceCallback.onDeviceClick(bluetoothDevice);
         });
     }

@@ -54,8 +54,15 @@ public class MainFragment extends Fragment {
 //        binding.fab.setOnClickListener(v -> {
 //            NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry().getSavedStateHandle().set(Constant.BLUETOOTH_SCAN_REQUEST, "MainFragment");
 //        });
+        binding.btnTestOn.setOnClickListener(v -> {
+            NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry().getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, "on");
+        });
+        binding.btnTestOff.setOnClickListener(v -> {
+            NavHostFragment.findNavController(MainFragment.this).getCurrentBackStackEntry().getSavedStateHandle().set(Constant.BLUETOOTH_SEND_COMMAND, "off");
+        });
         binding.fab.setOnClickListener(view1 -> NavHostFragment.findNavController(MainFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment));
+
     }
 
     @Override

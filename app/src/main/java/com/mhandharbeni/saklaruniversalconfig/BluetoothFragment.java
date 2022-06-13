@@ -13,10 +13,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
 import com.mhandharbeni.saklaruniversalconfig.adapters.BluetoothDevicesAdapter;
 import com.mhandharbeni.saklaruniversalconfig.databinding.FragmentBluetoothBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
@@ -38,20 +40,41 @@ public class BluetoothFragment extends Fragment implements BluetoothDevicesAdapt
     ) {
 
         binding = FragmentBluetoothBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         initAdapter();
-        binding.refreshDevice.setOnRefreshListener(() -> {
-            NavHostFragment.findNavController(BluetoothFragment.this)
-                    .getCurrentBackStackEntry()
-                    .getSavedStateHandle()
-                    .set(Constant.BLUETOOTH_SCAN_REQUEST, "BluetoothFragment");
+
+        NavHostFragment.findNavController(BluetoothFragment.this)
+                        .getCurrentBackStackEntry().getSavedStateHandle().getLiveData(Constant.BLUETOOTH_CONNECTED_STRING)
+                        .observe(getViewLifecycleOwner(), o -> {
+                            if (o == BluetoothStatus.CONNECTED) {
+
+                            } else if (o == BluetoothStatus.CONNECTING) {
+
+                            } else if (o == BluetoothStatus.NONE) {
+                                bluetoothDevicesAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+
+        binding.refreshDevice.setOnRefreshListener(() ->
+                NavHostFragment.findNavController(BluetoothFragment.this)
+                        .getCurrentBackStackEntry()
+                        .getSavedStateHandle()
+                        .set(Constant.BLUETOOTH_SCAN_REQUEST, "BluetoothFragment"));
+        requireActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                binding.refreshDevice.setRefreshing(true);
+                NavHostFragment.findNavController(BluetoothFragment.this)
+                        .getCurrentBackStackEntry()
+                        .getSavedStateHandle()
+                        .set(Constant.BLUETOOTH_SCAN_REQUEST, "BluetoothFragment");
+            }
         });
+
+
+        return binding.getRoot();
+
     }
 
     @Override
@@ -78,6 +101,7 @@ public class BluetoothFragment extends Fragment implements BluetoothDevicesAdapt
     @Override
     public void onDeviceClick(BluetoothDevice device) {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+
         }
         Log.d(TAG, "onDeviceClick: " + device.getName());
         Objects.requireNonNull(NavHostFragment.findNavController(BluetoothFragment.this)
