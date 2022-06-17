@@ -6,35 +6,153 @@
     android:layout_height="match_parent"
     tools:context=".MainFragment">
 
-    <Button
-        android:id="@+id/btnTestOn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ON"
-        app:layout_constraintBottom_toTopOf="@id/btnTestOff"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+    <LinearLayout
+        android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
-
-    <Button
-        android:id="@+id/btnTestOff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="OFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnTestOn"
-        tools:ignore="HardcodedText" />
-
+        android:layout_width="0dp"
+        android:layout_height="0dp">
+        <LinearLayout
+            android:background="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txtDisplay"
+                android:lines="1"
+                android:maxLines="1"
+                android:lineHeight="120dp"
+                android:textSize="200sp"
+                android:autoSizeMaxTextSize="200sp"
+                android:autoSizeStepGranularity="10sp"
+                android:autoSizeMinTextSize="50sp"
+                android:autoSizeTextType="uniform"
+                android:autoSizePresetSizes="50sp"
+                android:text="Relay 1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+        <LinearLayout
+            android:weightSum="0.9"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:padding="4dp"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:weightSum="0.8"
+                android:layout_weight="0.3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos1"
+                    android:textSize="20sp"
+                    android:text="Relay 1"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos2"
+                    android:textSize="20sp"
+                    android:text="Relay 2"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos3"
+                    android:textSize="20sp"
+                    android:text="Relay 3"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos4"
+                    android:textSize="20sp"
+                    android:text="Relay 4"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="4dp"
+                android:weightSum="0.6"
+                android:layout_weight="0.3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mode1"
+                    android:textSize="20sp"
+                    android:text="Mode 1"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/previousMode"
+                    android:textSize="16sp"
+                    android:text="Previous Mode"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/nextMode"
+                    android:textSize="20sp"
+                    android:text="Next Mode"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+            <LinearLayout
+                android:weightSum="0.8"
+                android:orientation="vertical"
+                android:layout_weight="0.3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos5"
+                    android:textSize="20sp"
+                    android:text="Relay 5"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos6"
+                    android:textSize="20sp"
+                    android:text="Relay 6"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos7"
+                    android:textSize="20sp"
+                    android:text="Relay 7"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPos8"
+                    android:textSize="20sp"
+                    android:text="Relay 8"
+                    android:layout_weight="0.2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/ic_bluetooth_black"
