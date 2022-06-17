@@ -26,6 +26,8 @@ import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothClassicService;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothConfiguration;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService;
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus;
+import com.mhandharbeni.saklaruniversalconfig.database.AppDb;
+import com.mhandharbeni.saklaruniversalconfig.database.models.Buttons;
 import com.mhandharbeni.saklaruniversalconfig.databinding.ActivityMainBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
 import com.mhandharbeni.saklaruniversalconfig.utils.Util;
@@ -55,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothConfiguration config;
     private BluetoothService service;
+    private AppDb appDb;
+
     ActivityResultLauncher<Intent> mainActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             this::resultActivity);
@@ -245,6 +249,10 @@ public class MainActivity extends AppCompatActivity
             // coarse location accepted
             Util.enableGps(this);
         }
+
+        if (writeStoragePermission) {
+            initDb();
+        }
     }
 
     void observeChild(NavController navController, NavDestination navDestination, Bundle arguments) {
@@ -287,6 +295,49 @@ public class MainActivity extends AppCompatActivity
             List<String> listCommand = new UtilList<String>().convertObjectToList(command);
             service.write(Util.generateData(listCommand));
         } catch (Exception ignored) {
+        }
+    }
+
+    void initDb() {
+        appDb = AppDb.getInstance(getApplicationContext());
+        initData();
+    }
+
+    void initData() {
+        if (appDb.buttons().getList().size() < 1) {
+            // default data
+            List<Buttons> listButtons = new ArrayList<>();
+            for (int i = 0; i < 32; i++) {
+                Buttons buttons = new Buttons();
+                if (i<=8) {
+                    buttons.setPosition(String.valueOf(i));
+                    buttons.setMode("1");
+                    buttons.setRelay("1");
+                    buttons.setType(1);
+                    buttons.setLabel("Button "+i);
+                } else if (i>8 && i<=16) {
+                    buttons.setPosition(String.valueOf(i));
+                    buttons.setMode("2");
+                    buttons.setRelay("1");
+                    buttons.setType(1);
+                    buttons.setLabel("Button "+i);
+                } else if (i>16 && i<=24) {
+                    buttons.setPosition(String.valueOf(i));
+                    buttons.setMode("3");
+                    buttons.setRelay("1");
+                    buttons.setType(1);
+                    buttons.setLabel("Button "+i);
+                } else if (i>24) {
+                    buttons.setPosition(String.valueOf(i));
+                    buttons.setMode("4");
+                    buttons.setRelay("1");
+                    buttons.setType(1);
+                    buttons.setLabel("Button "+i);
+                }
+                listButtons.add(i, buttons);
+            }
+
+            appDb.buttons().insert(listButtons);
         }
     }
 }

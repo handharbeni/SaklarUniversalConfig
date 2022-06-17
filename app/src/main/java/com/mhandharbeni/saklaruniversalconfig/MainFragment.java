@@ -1,14 +1,18 @@
 package com.mhandharbeni.saklaruniversalconfig;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.mhandharbeni.saklaruniversalconfig.database.AppDb;
+import com.mhandharbeni.saklaruniversalconfig.database.models.Buttons;
 import com.mhandharbeni.saklaruniversalconfig.databinding.FragmentMainBinding;
 import com.mhandharbeni.saklaruniversalconfig.utils.Constant;
 import com.mhandharbeni.saklaruniversalconfig.utils.UtilNav;
@@ -18,9 +22,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class MainFragment extends Fragment {
-
+public class MainFragment extends Fragment implements Observer<List<Buttons>> {
+    private final String TAG = MainFragment.class.getSimpleName();
     private FragmentMainBinding binding;
+    private AppDb appDb;
 
     @Override
     public View onCreateView(
@@ -29,6 +34,7 @@ public class MainFragment extends Fragment {
     ) {
 
         binding = FragmentMainBinding.inflate(inflater, container, false);
+        appDb = AppDb.getInstance(requireContext());
         return binding.getRoot();
 
     }
@@ -92,7 +98,14 @@ public class MainFragment extends Fragment {
                         .findNavController(MainFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
         );
+        appDb.buttons().getLiveByMode("1").observe(getViewLifecycleOwner(), this);
+        initAdapter();
+    }
 
+    void initAdapter() {
+        for (Buttons buttons : appDb.buttons().getButtonByMode("1")) {
+            Log.d(TAG, "initAdapter: "+buttons.toString());
+        }
     }
 
     @Override
@@ -101,4 +114,10 @@ public class MainFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onChanged(List<Buttons> buttons) {
+        for (Buttons button : buttons) {
+            Log.d(TAG, "onChanged: "+button.toString());
+        }
+    }
 }
