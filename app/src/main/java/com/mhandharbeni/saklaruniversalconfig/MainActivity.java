@@ -1,12 +1,14 @@
 package com.mhandharbeni.saklaruniversalconfig;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -37,6 +39,7 @@ import com.mhandharbeni.saklaruniversalconfig.utils.UtilNav;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity
     private BluetoothConfiguration config;
     private BluetoothService service;
     private AppDb appDb;
+    private boolean hideMenu = true;
 
     ActivityResultLauncher<Intent> mainActivityLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -87,15 +91,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        for (int i = 0; i < menu.size(); i++) {
+            menu.getItem(i).setVisible(!hideMenu);
+        }
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_open:
+                return true;
+            case R.id.action_save:
+                return true;
+            case R.id.action_upload:
+                return true;
+            case R.id.action_download:
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -256,6 +271,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     void observeChild(NavController navController, NavDestination navDestination, Bundle arguments) {
+        if (Objects.requireNonNull(navDestination.getLabel()).toString()
+                .equalsIgnoreCase(getResources().getString(R.string.saklar_config_label))) {
+            hideMenu = !bluetoothConnected;
+        } else {
+            hideMenu = true;
+        }
+        Log.d(TAG, "observeChild: hideMenu "+hideMenu);
+        invalidateOptionsMenu();
+
         new UtilNav<>()
                 .observeValue(
                         navController,
@@ -336,7 +360,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 listButtons.add(i, buttons);
             }
-
             appDb.buttons().insert(listButtons);
         }
     }

@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/SaklarConfig">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/SaklarConfig"
         android:name="com.mhandharbeni.saklaruniversalconfig.MainFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/saklar_config_label"
         tools:layout="@layout/fragment_main">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_SaklarConfig_to_BluetoothDevice"
+            app:destination="@id/BluetoothDevice" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
+        android:id="@+id/BluetoothDevice"
         android:name="com.mhandharbeni.saklaruniversalconfig.BluetoothFragment"
-        android:label="@string/second_fragment_label"
+        android:label="@string/bluetooth_device_label"
         tools:layout="@layout/fragment_bluetooth">
 
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            android:id="@+id/action_BluetoothDevice_to_SaklarConfig"
+            app:destination="@id/SaklarConfig" />
     </fragment>
 </navigation>

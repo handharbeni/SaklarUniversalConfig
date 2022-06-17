@@ -1,5 +1,6 @@
 package com.mhandharbeni.saklaruniversalconfig;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputLayout;
 import com.mhandharbeni.saklaruniversalconfig.database.AppDb;
 import com.mhandharbeni.saklaruniversalconfig.database.models.Buttons;
 import com.mhandharbeni.saklaruniversalconfig.databinding.FragmentMainBinding;
@@ -24,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressLint("DefaultLocale")
 public class MainFragment extends Fragment implements Observer<List<Buttons>> {
     private final String TAG = MainFragment.class.getSimpleName();
     private FragmentMainBinding binding;
@@ -106,7 +110,7 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
         binding.fab.setOnClickListener(v ->
                 NavHostFragment
                         .findNavController(MainFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment)
+                        .navigate(R.id.action_SaklarConfig_to_BluetoothDevice)
         );
         binding.btnPos1.setOnClickListener(this::onButtonClick);
         binding.btnPos2.setOnClickListener(this::onButtonClick);
@@ -119,6 +123,7 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
 
         binding.mode1.setOnClickListener(v -> {
             iMode = 1;
+            binding.txtDisplay.setText(String.format("MODE %d", iMode));
             changeMode();
         });
         binding.previousMode.setOnClickListener(v -> {
@@ -126,6 +131,7 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
                 return;
             }
             iMode--;
+            binding.txtDisplay.setText(String.format("MODE %d", iMode));
             changeMode();
         });
         binding.nextMode.setOnClickListener(v -> {
@@ -133,6 +139,7 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
                 return;
             }
             iMode++;
+            binding.txtDisplay.setText(String.format("MODE %d", iMode));
             changeMode();
         });
 
@@ -140,44 +147,135 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
     }
 
     void onButtonClick(View view) {
+        Buttons buttons = null;
         if (view.getId() == binding.btnPos1.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos1.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos1.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos2.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos2.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos2.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos3.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos3.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos3.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos4.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos4.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos4.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos5.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos5.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos5.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos6.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos6.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos6.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos7.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos7.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos7.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         } else if (view.getId() == binding.btnPos8.getId()) {
-            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos8.getText().toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.btnPos8.getText().toString(), String.valueOf(iMode));
             Log.d(TAG, "onButtonClick: "+buttons.toString());
         }
+        if (buttons != null) {
+            showData(buttons);
+        }
+    }
+
+    void showData(Buttons buttons) {
+        @SuppressLint("InflateParams") View view = LayoutInflater.from(requireContext()).inflate(R.layout.relay_form, null, false);
+        TextInputLayout edtRelayName = view.findViewById(R.id.edtRelayName);
+        SwitchMaterial switchToggle = view.findViewById(R.id.switchToggle);
+
+        Objects.requireNonNull(edtRelayName.getEditText()).setText(buttons.getLabel());
+        switchToggle.setChecked(buttons.getType()==0);
+
+        UtilDialogs.showDialog(requireContext(), view, "Save", new UtilDialogs.DialogCallbacks() {
+            @Override
+            public void onPositiveClick() {
+
+            }
+
+            @Override
+            public void onNegativeClick() {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
     }
 
     void setupData() {
         try {
             List<Buttons> buttons = appDb.buttons().getButtonByMode(String.valueOf(iMode));
-            binding.btnPos1.setText(buttons.get(0).getLabel());
-            binding.btnPos2.setText(buttons.get(1).getLabel());
-            binding.btnPos3.setText(buttons.get(2).getLabel());
-            binding.btnPos4.setText(buttons.get(3).getLabel());
-            binding.btnPos5.setText(buttons.get(4).getLabel());
-            binding.btnPos6.setText(buttons.get(5).getLabel());
-            binding.btnPos7.setText(buttons.get(6).getLabel());
-            binding.btnPos8.setText(buttons.get(7).getLabel());
+            for (int i = 0; i < buttons.size(); i++) {
+                Buttons btns = buttons.get(i);
+                switch (i) {
+                    case 0 :
+                        binding.btnPos1.setText(btns.getLabel());
+                        if (btns.getStatus()==0) {
+                            binding.btnPos1.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos1.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 1 :
+                        binding.btnPos2.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos2.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos2.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 2 :
+                        binding.btnPos3.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos3.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos3.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 3 :
+                        binding.btnPos4.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos4.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos4.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 4 :
+                        binding.btnPos5.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos5.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos5.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 5 :
+                        binding.btnPos6.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos6.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos6.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 6 :
+                        binding.btnPos7.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos7.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos7.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                    case 7 :
+                        binding.btnPos8.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.btnPos8.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        } else {
+                            binding.btnPos8.setTextColor(requireContext().getResources().getColor(R.color.white));
+                        }
+                        break;
+                }
+            }
         } catch (Exception ignored) {}
     }
 

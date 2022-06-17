@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">SaklarUniversalConfig</string>
-    <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">Konfigurasi Saklar</string>
-    <string name="second_fragment_label">Bluetooth Device</string>
+    <string name="saklar_config_label">Konfigurasi Saklar</string>
+    <string name="bluetooth_device_label">Bluetooth Device</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
@@ -12,4 +11,12 @@
     <string name="label_connecting">CONNECTING</string>
     <string name="device_name">Device Name</string>
     <string name="device_address">Device Address</string>
+
+    <string name="open">Open</string>
+    <string name="save">Save</string>
+    <string name="upload">Upload</string>
+    <string name="download">Download</string>
+
+    <string name="relay_name">Relay Name</string>
+    <string name="toggle_button">Toggle Button</string>
 </resources>

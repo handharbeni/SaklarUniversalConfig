@@ -44,8 +44,8 @@ public interface InterfaceButtons {
     @Query("SELECT * FROM buttons WHERE uniqueId = :value")
     Buttons getButtonById(int value);
 
-    @Query("SELECT * FROM buttons WHERE label = :value")
-    Buttons getButtonByLabel(String value);
+    @Query("SELECT * FROM buttons WHERE label = :value AND mode = :mode")
+    Buttons getButtonByLabel(String value, String mode);
 
     @Query("SELECT * FROM buttons WHERE position = :value")
     Buttons getButtonByPosition(String value);
