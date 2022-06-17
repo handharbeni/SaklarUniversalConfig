@@ -17,6 +17,7 @@ public class Buttons implements Serializable {
     String relay;
     String label;
     int type;
+    int status;
 
     public Buttons() {
     }
@@ -69,6 +70,14 @@ public class Buttons implements Serializable {
         this.type = type;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -79,6 +88,7 @@ public class Buttons implements Serializable {
                 ", relay='" + relay + '\'' +
                 ", label='" + label + '\'' +
                 ", type=" + type +
+                ", status=" + status +
                 '}';
     }
 }

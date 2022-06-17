@@ -2,6 +2,7 @@ package com.mhandharbeni.saklaruniversalconfig.database;
 
 import android.content.Context;
 
+import androidx.room.AutoMigration;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -39,7 +40,9 @@ public abstract class AppDb extends RoomDatabase {
                                     AppDb.class,
                                     Constant.DB_NAME
                             )
-                            .addMigrations(Migrations.MIGRATION_0_1, Migrations.MIGRATION_1_2)
+                            .addMigrations(
+                                    Migrations.MIGRATION_0_1
+                            )
                             .allowMainThreadQueries()
                             .fallbackToDestructiveMigration()
                             .build();

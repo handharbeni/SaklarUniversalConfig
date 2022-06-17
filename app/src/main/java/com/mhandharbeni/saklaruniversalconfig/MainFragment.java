@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -27,6 +28,9 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
     private final String TAG = MainFragment.class.getSimpleName();
     private FragmentMainBinding binding;
     private AppDb appDb;
+    private int iMode = 1;
+
+    LiveData<List<Buttons>> liveData = null;
 
     @Override
     public View onCreateView(
@@ -42,6 +46,11 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        liveData = appDb.buttons().getLiveByMode("1");
+
+        liveData.observe(getViewLifecycleOwner(), this);
+
         new UtilNav<Boolean>()
                 .observeValue(
                         NavHostFragment.findNavController(MainFragment.this),
@@ -99,25 +108,85 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
                         .findNavController(MainFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
         );
-        binding.btnPos1.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos1.getText().toString()));
-        binding.btnPos2.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos2.getText().toString()));
-        binding.btnPos3.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos3.getText().toString()));
-        binding.btnPos4.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos4.getText().toString()));
-        binding.btnPos5.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos5.getText().toString()));
-        binding.btnPos6.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos6.getText().toString()));
-        binding.btnPos7.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos7.getText().toString()));
-        binding.btnPos8.setOnClickListener(v -> binding.txtDisplay.setText(binding.btnPos8.getText().toString()));
+        binding.btnPos1.setOnClickListener(this::onButtonClick);
+        binding.btnPos2.setOnClickListener(this::onButtonClick);
+        binding.btnPos3.setOnClickListener(this::onButtonClick);
+        binding.btnPos4.setOnClickListener(this::onButtonClick);
+        binding.btnPos5.setOnClickListener(this::onButtonClick);
+        binding.btnPos6.setOnClickListener(this::onButtonClick);
+        binding.btnPos7.setOnClickListener(this::onButtonClick);
+        binding.btnPos8.setOnClickListener(this::onButtonClick);
 
-        binding.mode1.setOnClickListener(v -> UtilDialogs.showDialog(requireContext(), "Test", "test Message"));
+        binding.mode1.setOnClickListener(v -> {
+            iMode = 1;
+            changeMode();
+        });
+        binding.previousMode.setOnClickListener(v -> {
+            if (iMode == 1) {
+                return;
+            }
+            iMode--;
+            changeMode();
+        });
+        binding.nextMode.setOnClickListener(v -> {
+            if (iMode == 4) {
+                return;
+            }
+            iMode++;
+            changeMode();
+        });
 
-        appDb.buttons().getLiveByMode("1").observe(getViewLifecycleOwner(), this);
-        initAdapter();
+        setupData();
     }
 
-    void initAdapter() {
-        for (Buttons buttons : appDb.buttons().getButtonByMode("1")) {
-            Log.d(TAG, "initAdapter: "+buttons.toString());
+    void onButtonClick(View view) {
+        if (view.getId() == binding.btnPos1.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos1.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos2.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos2.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos3.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos3.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos4.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos4.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos5.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos5.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos6.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos6.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos7.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos7.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
+        } else if (view.getId() == binding.btnPos8.getId()) {
+            Buttons buttons = appDb.buttons().getButtonByLabel(binding.btnPos8.getText().toString());
+            Log.d(TAG, "onButtonClick: "+buttons.toString());
         }
+    }
+
+    void setupData() {
+        try {
+            List<Buttons> buttons = appDb.buttons().getButtonByMode(String.valueOf(iMode));
+            binding.btnPos1.setText(buttons.get(0).getLabel());
+            binding.btnPos2.setText(buttons.get(1).getLabel());
+            binding.btnPos3.setText(buttons.get(2).getLabel());
+            binding.btnPos4.setText(buttons.get(3).getLabel());
+            binding.btnPos5.setText(buttons.get(4).getLabel());
+            binding.btnPos6.setText(buttons.get(5).getLabel());
+            binding.btnPos7.setText(buttons.get(6).getLabel());
+            binding.btnPos8.setText(buttons.get(7).getLabel());
+        } catch (Exception ignored) {}
+    }
+
+    void changeMode() {
+        liveData.removeObservers(getViewLifecycleOwner());
+        liveData = appDb.buttons().getLiveByMode(String.valueOf(iMode));
+        liveData.observe(getViewLifecycleOwner(), this);
+
+        setupData();
     }
 
     @Override
@@ -128,8 +197,6 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
 
     @Override
     public void onChanged(List<Buttons> buttons) {
-        for (Buttons button : buttons) {
-            Log.d(TAG, "onChanged: "+button.toString());
-        }
+        setupData();
     }
 }
