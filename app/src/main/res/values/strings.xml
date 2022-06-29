@@ -19,4 +19,11 @@
 
     <string name="relay_name">Relay Name</string>
     <string name="toggle_button">Toggle Button</string>
+    <string name="relay">Relay 1</string>
+    <string name="btn">btn 1</string>
+    <string name="lamp">LAMP</string>
+    <string name="on_off">ON/OFF</string>
+    <string name="sirine">SIRINE</string>
+    <string name="push_on_button">Push On Button</string>
+    <string name="group_button">Group Button</string>
 </resources>
