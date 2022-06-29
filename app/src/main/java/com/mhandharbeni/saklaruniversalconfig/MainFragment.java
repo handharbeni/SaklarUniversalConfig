@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -13,8 +14,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textview.MaterialTextView;
 import com.mhandharbeni.saklaruniversalconfig.database.AppDb;
 import com.mhandharbeni.saklaruniversalconfig.database.models.Buttons;
 import com.mhandharbeni.saklaruniversalconfig.databinding.FragmentMainBinding;
@@ -48,10 +51,11 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
 
     }
 
+    @SuppressLint("SetTextI18n")
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        liveData = appDb.buttons().getLiveByMode("1");
+        liveData = appDb.buttons().getLiveByMode(String.valueOf(iMode));
 
         liveData.observe(getViewLifecycleOwner(), this);
 
@@ -121,25 +125,28 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
         binding.btnPos7.setOnClickListener(this::onButtonClick);
         binding.btnPos8.setOnClickListener(this::onButtonClick);
 
-        binding.mode1.setOnClickListener(v -> {
+        binding.lampMode.setOnClickListener(v -> {
             iMode = 1;
-            binding.txtDisplay.setText(String.format("MODE %d", iMode));
+            binding.txtDisplay.setText("Lamp Mode");
             changeMode();
         });
-        binding.previousMode.setOnClickListener(v -> {
-            if (iMode == 1) {
-                return;
-            }
-            iMode--;
-            binding.txtDisplay.setText(String.format("MODE %d", iMode));
-            changeMode();
-        });
-        binding.nextMode.setOnClickListener(v -> {
+//        binding.onOff.setOnClickListener(v -> {
+//            if (iMode == 1) {
+//                return;
+//            }
+//            iMode--;
+//            binding.txtDisplay.setText(String.format("MODE %d", iMode));
+//            changeMode();
+//        });
+        binding.sirineMode.setOnClickListener(v -> {
             if (iMode == 4) {
+                iMode = 2;
+                binding.txtDisplay.setText(String.format("SIREN %d", iMode-1));
+                changeMode();
                 return;
             }
             iMode++;
-            binding.txtDisplay.setText(String.format("MODE %d", iMode));
+            binding.txtDisplay.setText(String.format("SIREN %d", iMode-1));
             changeMode();
         });
 
@@ -148,62 +155,97 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
 
     void onButtonClick(View view) {
         Buttons buttons = null;
+        MaterialTextView mtView = null;
         if (view.getId() == binding.btnPos1.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos1.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn1.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn1;
         } else if (view.getId() == binding.btnPos2.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos2.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn2.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn2;
         } else if (view.getId() == binding.btnPos3.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos3.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn3.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn3;
         } else if (view.getId() == binding.btnPos4.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos4.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn4.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn4;
         } else if (view.getId() == binding.btnPos5.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos5.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn5.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn5;
         } else if (view.getId() == binding.btnPos6.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos6.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn6.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn6;
         } else if (view.getId() == binding.btnPos7.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos7.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn7.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn7;
         } else if (view.getId() == binding.btnPos8.getId()) {
-            buttons = appDb.buttons().getButtonByLabel(binding.btnPos8.getText().toString(), String.valueOf(iMode));
-            Log.d(TAG, "onButtonClick: "+buttons.toString());
+            buttons = appDb.buttons().getButtonByLabel(binding.txtBtn8.getText().toString(), String.valueOf(iMode));
+            mtView = binding.txtBtn8;
         }
-        if (buttons != null) {
-            showData(buttons);
+        if (mtView != null && buttons != null) {
+            if (iMode == 1) {
+                showDataLamp(mtView, buttons);
+            } else {
+                showDataRelay(mtView, buttons);
+            }
         }
     }
 
-    void showData(Buttons buttons) {
+    void showDataRelay(MaterialTextView materialTextView, Buttons buttons) {
+
+        materialTextView.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
+    }
+
+    void showDataLamp(MaterialTextView materialTextView, Buttons buttons) {
+        materialTextView.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
+
         @SuppressLint("InflateParams") View view = LayoutInflater.from(requireContext()).inflate(R.layout.relay_form, null, false);
         TextInputLayout edtRelayName = view.findViewById(R.id.edtRelayName);
-        SwitchMaterial switchToggle = view.findViewById(R.id.switchToggle);
+        RadioGroup radioGroup = view.findViewById(R.id.rgType);
+        MaterialRadioButton btnToggle = view.findViewById(R.id.btnToggle);
+        MaterialRadioButton btnPushOn = view.findViewById(R.id.btnPushOn);
+        MaterialRadioButton btnGroup = view.findViewById(R.id.btnGroup);
+
+        switch (buttons.getType()) {
+            case 1 :
+                btnToggle.setChecked(true);
+                break;
+            case 2 :
+                btnPushOn.setChecked(true);
+                break;
+            case 3 :
+                btnGroup.setChecked(true);
+                break;
+        }
 
         Objects.requireNonNull(edtRelayName.getEditText()).setText(buttons.getLabel());
-        switchToggle.setChecked(buttons.getType()==0);
 
         UtilDialogs.showDialog(requireContext(), view, "Save", new UtilDialogs.DialogCallbacks() {
             @Override
             public void onPositiveClick() {
+                int type = 1;
+                if (radioGroup.getCheckedRadioButtonId() == R.id.btnPushOn) {
+                    type = 2;
+                } else if (radioGroup.getCheckedRadioButtonId() == R.id.btnGroup){
+                    type = 3;
+                }
+                buttons.setLabel(edtRelayName.getEditText().getText().toString());
+                buttons.setType(type);
+                appDb.buttons().insert(buttons);
 
+                materialTextView.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
             }
 
             @Override
-            public void onNegativeClick() {
-
-            }
+            public void onNegativeClick() {}
 
             @Override
             public void onCancel() {
-
+                materialTextView.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
             }
         });
     }
 
+    @SuppressLint("SetTextI18n")
     void setupData() {
         try {
             List<Buttons> buttons = appDb.buttons().getButtonByMode(String.valueOf(iMode));
@@ -211,67 +253,75 @@ public class MainFragment extends Fragment implements Observer<List<Buttons>> {
                 Buttons btns = buttons.get(i);
                 switch (i) {
                     case 0 :
-                        binding.btnPos1.setText(btns.getLabel());
-                        if (btns.getStatus()==0) {
-                            binding.btnPos1.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        binding.txtBtn1.setText(btns.getLabel());
+                        if (btns.getStatus()==1) {
+                            binding.txtBtn1.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
                         } else {
-                            binding.btnPos1.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn1.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 1 :
-                        binding.btnPos2.setText(btns.getLabel());
+                        binding.txtBtn2.setText(btns.getLabel());
                         if (btns.getStatus()==1) {
-                            binding.btnPos2.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                            binding.txtBtn2.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
                         } else {
-                            binding.btnPos2.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn2.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 2 :
-                        binding.btnPos3.setText(btns.getLabel());
+                        binding.txtBtn3.setText(btns.getLabel());
                         if (btns.getStatus()==1) {
-                            binding.btnPos3.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                            binding.txtBtn3.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
                         } else {
-                            binding.btnPos3.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn3.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 3 :
-                        binding.btnPos4.setText(btns.getLabel());
-                        if (btns.getStatus()==1) {
-                            binding.btnPos4.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        if (iMode > 1) {
+                            binding.txtBtn4.setText("HF1");
                         } else {
-                            binding.btnPos4.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn4.setText(btns.getLabel());
+                        }
+                        if (btns.getStatus()==1) {
+                            binding.txtBtn4.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
+                        } else {
+                            binding.txtBtn4.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 4 :
-                        binding.btnPos5.setText(btns.getLabel());
+                        binding.txtBtn5.setText(btns.getLabel());
                         if (btns.getStatus()==1) {
-                            binding.btnPos5.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                            binding.txtBtn5.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
                         } else {
-                            binding.btnPos5.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn5.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 5 :
-                        binding.btnPos6.setText(btns.getLabel());
+                        binding.txtBtn6.setText(btns.getLabel());
                         if (btns.getStatus()==1) {
-                            binding.btnPos6.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                            binding.txtBtn6.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
                         } else {
-                            binding.btnPos6.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn6.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 6 :
-                        binding.btnPos7.setText(btns.getLabel());
+                        binding.txtBtn7.setText(btns.getLabel());
                         if (btns.getStatus()==1) {
-                            binding.btnPos7.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                            binding.txtBtn7.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
                         } else {
-                            binding.btnPos7.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn7.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                     case 7 :
-                        binding.btnPos8.setText(btns.getLabel());
-                        if (btns.getStatus()==1) {
-                            binding.btnPos8.setTextColor(requireContext().getResources().getColor(R.color.teal_700));
+                        if (iMode > 1) {
+                            binding.txtBtn8.setText("HF2");
                         } else {
-                            binding.btnPos8.setTextColor(requireContext().getResources().getColor(R.color.white));
+                            binding.txtBtn8.setText(btns.getLabel());
+                        }
+                        if (btns.getStatus()==1) {
+                            binding.txtBtn8.setBackgroundColor(requireContext().getResources().getColor(R.color.color_2));
+                        } else {
+                            binding.txtBtn8.setBackgroundColor(requireContext().getResources().getColor(R.color.black));
                         }
                         break;
                 }

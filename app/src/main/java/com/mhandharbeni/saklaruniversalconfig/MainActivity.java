@@ -331,34 +331,26 @@ public class MainActivity extends AppCompatActivity
         if (appDb.buttons().getList().size() < 1) {
             // default data
             List<Buttons> listButtons = new ArrayList<>();
-            for (int i = 0; i < 32; i++) {
+            for (int i = 1; i <= 33; i++) {
                 Buttons buttons = new Buttons();
-                if (i<=8) {
-                    buttons.setPosition(String.valueOf(i));
-                    buttons.setMode("1");
-                    buttons.setRelay("1");
-                    buttons.setType(1);
-                    buttons.setLabel("Button "+i);
-                } else if (i>8 && i<=16) {
-                    buttons.setPosition(String.valueOf(i));
-                    buttons.setMode("2");
-                    buttons.setRelay("1");
-                    buttons.setType(1);
-                    buttons.setLabel("Button "+i);
-                } else if (i>16 && i<=24) {
-                    buttons.setPosition(String.valueOf(i));
-                    buttons.setMode("3");
-                    buttons.setRelay("1");
-                    buttons.setType(1);
-                    buttons.setLabel("Button "+i);
-                } else if (i>24) {
-                    buttons.setPosition(String.valueOf(i));
+                buttons.setUniqueId(i);
+                buttons.setPosition(String.valueOf(i));
+                buttons.setRelay("1");
+                buttons.setType(1);
+                if (i>24) {
                     buttons.setMode("4");
-                    buttons.setRelay("1");
-                    buttons.setType(1);
+                    buttons.setLabel("Siren "+i);
+                } else if (i > 16) {
+                    buttons.setMode("3");
+                    buttons.setLabel("Siren "+i);
+                } else if (i > 8) {
+                    buttons.setMode("2");
+                    buttons.setLabel("Siren "+i);
+                } else {
+                    buttons.setMode("1");
                     buttons.setLabel("Button "+i);
                 }
-                listButtons.add(i, buttons);
+                listButtons.add(buttons);
             }
             appDb.buttons().insert(listButtons);
         }

@@ -15,33 +15,154 @@
         android:layout_width="0dp"
         android:layout_height="0dp">
         <LinearLayout
+            android:orientation="vertical"
             android:background="@color/black"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="wrap_content">
             <com.google.android.material.textview.MaterialTextView
+                android:textAllCaps="true"
                 android:id="@+id/txtDisplay"
                 android:lines="1"
                 android:maxLines="1"
-                android:lineHeight="120dp"
-                android:textSize="200sp"
-                android:autoSizeMaxTextSize="200sp"
-                android:autoSizeStepGranularity="10sp"
-                android:autoSizeMinTextSize="50sp"
-                android:autoSizeTextType="uniform"
-                android:autoSizePresetSizes="50sp"
-                android:text="Relay 1"
+                android:textSize="20sp"
+                android:text="@string/relay"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/section1"
+                android:layout_marginBottom="7dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn1"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedWeights" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn5"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/section2"
+                android:layout_marginBottom="7dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn2"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedWeights" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn6"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/section3"
+                android:layout_marginBottom="7dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn3"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedWeights" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn7"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/section4"
+                android:layout_marginBottom="7dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn4"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:ignore="NestedWeights" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:textAllCaps="true"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="0.5"
+                    android:id="@+id/txtBtn8"
+                    android:text="@string/btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:weightSum="0.9"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:baselineAligned="false">
             <LinearLayout
                 android:padding="4dp"
                 android:orientation="vertical"
@@ -54,28 +175,25 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos1"
                     android:textSize="20sp"
-                    android:text="Relay 1"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    tools:ignore="NestedWeights" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos2"
                     android:textSize="20sp"
-                    android:text="Relay 2"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos3"
                     android:textSize="20sp"
-                    android:text="Relay 3"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos4"
                     android:textSize="20sp"
-                    android:text="Relay 4"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
@@ -88,23 +206,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/mode1"
+                    android:id="@+id/lampMode"
                     android:textSize="20sp"
-                    android:text="Mode 1"
+                    android:text="@string/lamp"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    tools:ignore="NestedWeights" />
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/previousMode"
+                    android:id="@+id/onOff"
                     android:textSize="16sp"
-                    android:text="Previous Mode"
+                    android:text="@string/on_off"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/nextMode"
+                    android:id="@+id/sirineMode"
                     android:textSize="20sp"
-                    android:text="Next Mode"
+                    android:text="@string/sirine"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
@@ -118,28 +237,25 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos5"
                     android:textSize="20sp"
-                    android:text="Relay 5"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    tools:ignore="NestedWeights" />
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos6"
                     android:textSize="20sp"
-                    android:text="Relay 6"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos7"
                     android:textSize="20sp"
-                    android:text="Relay 7"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPos8"
                     android:textSize="20sp"
-                    android:text="Relay 8"
                     android:layout_weight="0.2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
